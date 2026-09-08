@@ -26,12 +26,19 @@ function App({ demo = false }: PropsType) {
   const isInitialized = useSelector<AppRootStateType, boolean>(selectIsInitialized);
   const dispatch = useDispatch();
 
-  const defaultTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY) as ThemeMode;
-  const [themeMode, setThemeMode] = useState<ThemeMode>(defaultTheme);
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const savedTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY);
+
+    return savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
+  });
 
   useEffect(() => {
     dispatch(authThunks.initializeApp());
   }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_THEME_KEY, themeMode);
+  }, [themeMode]);
 
   if (!isInitialized) {
     return (
